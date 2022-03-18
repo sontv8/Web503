@@ -4,22 +4,29 @@ import Product from '../models/products'
 //     {id:2,name:"Product 2"}
 // ]
 
-export const listProduct = (request,response)=>{
+export const listProduct = async (request,response)=>{
     try{
-        const product = Product.find().exec()
+        const product = await Product.find().exec()
         response.json(product)
         // response.json(products)
     }catch(error){
         response.status(400).json({message:"Khong tim thay data"})
     }
 }
-export const listProductDetail = (request,response)=>{
-    const product = products.find(item => item.id === +request.params.id)
-    response.json(product)
-}
-export const createProduct = (request,response)=>{
+export const listProductDetail = async (request,response)=>{
     try{
-        const product = Product.find().exec()
+        const product = await Product.findOne({_id:request.params.id}).exec()
+        response.json(product)
+        // response.json(products)
+    }catch(error){
+        response.status(400).json({message:"Khong tim thay data"})
+    }
+    // const product = products.find(item => item.id === +request.params.id)
+    // response.json(product)
+}
+export const createProduct = async (request,response)=>{
+    try{
+        const product = await Product(request.body).save()
         response.json(product)
         // response.json(products)
     }catch(error){
@@ -28,10 +35,22 @@ export const createProduct = (request,response)=>{
     // products.push(request.body)
     // response.json(products)
 }
-export const deleteProduct = (request,response)=>{
-    const product = products.filter(item => item.id != request.params.id)
-    response.json(product);
+export const deleteProduct = async (request,response)=>{
+    try {
+        const product = await Product.findOneAndDelete({_id:request.params.id}).exec()
+        response.json(product);
+    } catch (error) {
+        response.status(400).json({message:"Khong xoa duoc"})
+    }
+    // const product = products.filter(item => item.id != request.params.id)
+    // response.json(product);
 }
-export const updateProduct = (request,response)=>{
-    response.json(products.map(item => item.id === +request.params.id? request.body:item))
+export const updateProduct = async (request,response)=>{
+    try {
+        const product = await Product.findOneAndUpdate({_id:request.params.id},request.body,{new:true}).exec()
+        response.json(product)
+    } catch (error) {
+        response.status(400).json({message:"Loi khong update duoc"})
+    }
+    // response.json(products.map(item => item.id === +request.params.id? request.body:item))
 }
